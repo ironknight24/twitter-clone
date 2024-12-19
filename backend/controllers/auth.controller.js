@@ -56,7 +56,7 @@ export const signup = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Something went wrong in server" });
+    res.status(500).json({ message: "Something went wrong in Signup Controller" });
   }
 };
 
@@ -85,10 +85,26 @@ export const login = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Something went wrong in server" });     
+        res.status(500).json({ message: "Something went wrong in Login Controller" });     
     }
 };
 
 export const logout = async (req, res) => {
-  res.json({ message: "Logout page" });
+    try {
+        res.cookie("jwt", "", {maxAge:0})
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong in Logout Controller" });
+    }
 };
+
+export const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select("-password");
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong in getMeController" });
+    }
+}
