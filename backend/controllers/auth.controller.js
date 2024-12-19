@@ -40,7 +40,7 @@ export const signup = async (req, res) => {
     if (newUser) {
         generateTokenAndSetCookie(newUser._id, res);
         await newUser.save();
-        
+
         return res.json({
             _id: newUser._id,
             username: newUser.username,
@@ -61,7 +61,32 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  res.json({ message: "Login page" });
+    try {
+        const { username, password } = req.body
+        const user = await User.findOne({ username })
+        const isPassword = await bcryptjs.compare(password, user?.password|| "")
+
+        if (!user ||!isPassword) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        generateTokenAndSetCookie(user._id, res);
+
+        res.status(200).json({
+            _id: user._id,
+            username: user.username,
+            fullName: user.fullName,
+            email: user.email,
+            followers: user.followers,
+            following: user.following,
+            profileImage: user.profileImage,
+            coverImage: user.coverImage,
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Something went wrong in server" });     
+    }
 };
 
 export const logout = async (req, res) => {
