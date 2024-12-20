@@ -133,3 +133,21 @@ export const likeUnlikePost = async (req, res) => {
       .json({ message: "Something went wrong in likeUnlikePost Controller" });
   }
 };
+
+
+export const getAllPosts = async(req, res) =>{
+    try {
+        const posts = await Post.find().sort({ createdAt: -1 });
+        if (posts.length === 0) {
+            return res.status(200).json([])
+        }
+
+        res.status(200).json(posts);
+        
+    } catch (error) {
+        console.log(error);
+        res
+        .status(500)
+        .json({ message: "Something went wrong in getAllPosts Controller" });
+    }
+}
